@@ -3,15 +3,35 @@
 \docType{methods}
 \name{piieffect}
 \alias{piieffect}
-\alias{piieffect,character-method}
+\alias{piieffect,data.frame,character,character,character,vector,vector,vector,numeric,numeric-method}
 \title{piieffect}
 \usage{
-piieffect(value)
+piieffect(data, outcome, intermediate, exposure, covariates.outcome,
+  covariates.intermediate, covariates.exposure, interaction, astar)
 
-\S4method{piieffect}{character}(value)
+
+  \S4method{piieffect}{data.frame,character,character,character,vector,vector,vector,numeric,numeric}(data,
+  outcome, intermediate, exposure, covariates.outcome, covariates.intermediate,
+  covariates.exposure, interaction, astar)
 }
 \arguments{
-\item{value}{A character that will be returned}
+\item{data}{A dataframe}
+
+\item{outcome}{The variable name for the outcome variable in data}
+
+\item{intermediate}{The variable name for the intermediate variable in data}
+
+\item{exposure}{The variable name for the exposure variable in data}
+
+\item{covariates.outcome}{A vector of variable names for covariates to be included in the outcome model}
+
+\item{covariates.intermediate}{A vector of variable names for covariates to be included in the outcome model}
+
+\item{covariates.exposure}{A vector of variable names for covariates to be included in the exposure model}
+
+\item{interaction}{A binary variable indicating if an interaction term between intermediate and exposure is needed}
+
+\item{astar}{A numeric value for the level of the exposure wanted for comparison}
 }
 \description{
 Long description for function goes here
@@ -19,12 +39,15 @@ and here...
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{character}: Generic/Function
+\item \code{data = data.frame,outcome = character,intermediate = character,exposure = character,covariates.outcome = vector,covariates.intermediate = vector,covariates.exposure = vector,interaction = numeric,astar = numeric}: Generic/Function
 }}
 
 \examples{
 
-output <- piieffect("hello")
+simdata <- readRDS(system.file("rds","simdata1.rds",package="frontdoorpiie"))
+simdata$c1c2 <- simdata$c1*simdata$c2
+output <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",
+covariates.outcome=c("c1","c2"),covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
 
 }
 \author{

@@ -2,5 +2,6 @@
 
 export(piieffect)
 exportMethods(piieffect)
+import(methods)
 import(numDeriv)
 import(stats)

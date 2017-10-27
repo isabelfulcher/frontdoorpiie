@@ -1,11 +1,20 @@
 Package: frontdoorpiie
-Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Population Intervention Indirect Effect estimation
+Version: 0.1
+Authors@R: c(person("Isabel", "Fulcher", email = "isabelfulcher@g.harvard.edu", role = c("aut", "cre")),
+             person("Ilya", "Shpitser", email = "ilyas@cs.jhu.edu", role = c("aut")),
+             person("Eric", "Tchetgen Tchetgen", email = "etchetgen@gmail.com", role = c("aut")))
+Description: This package provides estimation and inference
+    for the Population Intervention Indirect Effect (PIIE) in R. 
+    As developed in a paper by Fulcher et. al (2017), the primary
+    function returns the proposed estimators, their standard
+    deviation, and a 95% CI. 
+Depends: R (>= 3.2.0)
+License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports:
+  methods,
+  stats,
+  numDeriv
+RoxygenNote: 6.0.1

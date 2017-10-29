@@ -46,8 +46,7 @@ and here...
 
 simdata <- readRDS(system.file("rds","simdata1.rds",package="frontdoorpiie"))
 simdata$c1c2 <- simdata$c1*simdata$c2
-output <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",
-covariates.outcome=c("c1","c2"),covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
+output <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",covariates.outcome=c("c1","c2"),covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
 
 }
 \author{

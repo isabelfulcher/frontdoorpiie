@@ -15,7 +15,7 @@
 #' @param covariates.intermediate A vector of variable names for covariates to be included in the outcome model
 #' @param covariates.exposure A vector of variable names for covariates to be included in the exposure model
 #' @param interaction A binary variable indicating if an interaction term between intermediate and exposure is needed
-#' @param astar A numeric value for the level of the exposure wanted for comparison
+#' @param astar A numeric value for the level of the exposure the intermediate value takes
 #' @import stats
 #' @import numDeriv
 #' @export

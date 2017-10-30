@@ -32,7 +32,7 @@ piieffect(data, outcome, intermediate, exposure, covariates.outcome,
 
 \item{interaction}{A binary variable indicating if an interaction term between intermediate and exposure is needed}
 
-\item{astar}{A numeric value for the level of the exposure wanted for comparison}
+\item{astar}{A numeric value for the level of the exposure the intermediate value takes}
 }
 \description{
 This function provides estimation and inference for the

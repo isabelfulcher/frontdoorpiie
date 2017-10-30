@@ -27,7 +27,9 @@ A dataframe containing the outcome, exposure, intermediate, and all covariates s
 ### Outcome model 
 The outcome variable Y must be a continuous variable as it will be modeled with linear regression using the `lm()` function:
 
-$$E(Y | A=a,Z=z,C_y=c_y)  = \theta_0 + \theta_1 a  + \theta_2 z + \theta_3 az \theta_4^T c_y $$
+\[
+E(Y | A=a,Z=z,C_y=c_y)  = \theta_0 + \theta_1 a  + \theta_2 z + \theta_3 az \theta_4^T c_y 
+\]
 
 If an interaction term is not needed, the argument should be `interaction=0`. Additonally, the argument for the covariates in the outcome model should be specified in `covariates.outcome=c("covariate_1","covariate_2")`. If no covariates are needed, then this argument can be left blank or `covariates.outcome=0` can be used. No interaction terms between the exposure or intermediate and covariates are currently allowed. If interaction terms are desired between covariates, this should be created outside of the function (see example).
 
@@ -60,7 +62,8 @@ head(simdata)
 simdata$c1c2 <- simdata$c1*simdata$c2
 ```
 ### Apply `piieffect` function to estimate PIIE
-```r
+```{r,echo=TRUE}
 piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",
-covariates.outcome=1,covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
+  covariates.outcome=1,covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),
+  interaction=1,astar=0)
 ```

@@ -11,8 +11,9 @@ piieffect(data, outcome, intermediate, exposure, covariates.outcome,
 
 
   \S4method{piieffect}{data.frame,character,character,character,vector,vector,vector,numeric,numeric}(data,
-  outcome, intermediate, exposure, covariates.outcome, covariates.intermediate,
-  covariates.exposure, interaction, astar)
+  outcome, intermediate, exposure, covariates.outcome = c(1),
+  covariates.intermediate = c(1), covariates.exposure = c(1),
+  interaction = 1, astar = 0)
 }
 \arguments{
 \item{data}{A dataframe}
@@ -46,7 +47,7 @@ and here...
 
 simdata <- readRDS(system.file("rds","simdata1.rds",package="frontdoorpiie"))
 simdata$c1c2 <- simdata$c1*simdata$c2
-output <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",covariates.outcome=c("c1","c2"),covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
+output <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",covariates.outcome=1,covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
 
 }
 \author{

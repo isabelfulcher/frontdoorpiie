@@ -20,6 +20,7 @@ of the target population to the outcome mean had contrary to fact had the interm
 for each of the four estimators described in Fulcher et al. (2017): 
 
 ![](figure/estimators1.gif)
+![](figure/estimatorsdr.gif)
 
 ## Data format 
 
@@ -29,23 +30,21 @@ A dataframe containing the outcome, exposure, intermediate, and all covariates s
 ### Outcome model 
 The outcome variable Y must be a continuous variable as it will be modeled with linear regression using the `lm()` function:
 
-\[
-E(Y | A=a,Z=z,C_y=c_y)  = \theta_0 + \theta_1 a  + \theta_2 z + \theta_3 az \theta_4^T c_y 
-\]
+![](figure/outcome_model.gif)
 
 If an interaction term is not needed, the argument should be `interaction=0`. Additonally, the argument for the covariates in the outcome model should be specified in `covariates.outcome=c("covariate_1","covariate_2")`. If no covariates are needed, then this argument can be left blank or `covariates.outcome=0` can be used. No interaction terms between the exposure or intermediate and covariates are currently allowed. If interaction terms are desired between covariates, this should be created outside of the function (see example).
 
 ### Intermediate model
 The intermediate variable Z must be a continuous variable as it will be modeled with linear regression using the `lm()` function:
 
-$$E(Z | A=a,C_z=c_z)  = \beta_0 + \beta_1 a + \beta_2^T c_z $$
+![](figure/intermediate_model.gif)
 
 The argument for the covariates in the intermediate model should be specified in `covariates.intermediate=c("covariate_1","covariate_2")`. If no covariates are needed, then this argument can be left blank or `covariates.intermediate=0` can be used. No interaction terms between the exposure and covariates are currently allowed. If interaction terms are desired between covariates, this should be created outside of the function (see example).
 
 ### Exposure model 
 The exposure variable A must be a binary variable as it will be modeled with linear regression using the `glm()` function:
 
-$$E(A | C_a=c_a)  = expit(\alpha_0 + \alpha_1^T c_a) $$
+![](figure/exposure_model.gif)
 
 The argument for the covariates in the exposure model should be specified in `covariates.exposure=c("covariate_1","covariate_2")`. If no covariates are needed, then this argument can be left blank or `covariates.exposure=0` can be used. If interaction terms are desired between covariates, this should be created outside of the function (see example). 
 

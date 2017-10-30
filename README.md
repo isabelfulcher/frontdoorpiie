@@ -42,7 +42,7 @@ The intermediate variable Z must be a continuous variable as it will be modeled 
 The argument for the covariates in the intermediate model should be specified in `covariates.intermediate=c("covariate_1","covariate_2")`. If no covariates are needed, then this argument can be left blank or `covariates.intermediate=0` can be used. No interaction terms between the exposure and covariates are currently allowed. If interaction terms are desired between covariates, this should be created outside of the function (see example).
 
 ### Exposure model 
-The exposure variable A must be a binary variable as it will be modeled with linear regression using the `glm()` function:
+The exposure variable A must be a binary variable as it will be modeled with logistic regression using the `glm()` function:
 
 ![](figure/exposure_model.gif)
 

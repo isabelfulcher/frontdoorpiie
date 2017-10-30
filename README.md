@@ -17,7 +17,9 @@ This package only contains one function `piieffect`. This function provides
 estimation and inference of the Population Intervention Indirect Effect (PIIE). 
 The PIIE can be interpreted as the contrast that relates the marginal outcome 
 of the target population to the outcome mean had contrary to fact had the intermediate variable taken its corresponding value in the absence of exposure. The output for the function returns estimates, standard errors, and a 95\% Wald-type confidence interval 
-for each of the four estimators described in Fulcher et al. (2017): for $\Psi_{mle}$, $\Psi_{sp1}$, $\Psi_{sp2}$, and $\Psi_{dr}$. 
+for each of the four estimators described in Fulcher et al. (2017): 
+
+![](figure/estimators1.gif)
 
 ## Data format 
 

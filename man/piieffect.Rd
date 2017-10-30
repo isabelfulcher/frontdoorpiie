@@ -35,8 +35,12 @@ piieffect(data, outcome, intermediate, exposure, covariates.outcome,
 \item{astar}{A numeric value for the level of the exposure wanted for comparison}
 }
 \description{
-Long description for function goes here
-and here...
+This function provides estimation and inference for the
+Population Intervention Indirect Effect (PIIE) as described in
+Fulcher et al. (2017). The outcome and intermediate variables must
+be continuous as a linear model is used to model the means.
+Similarly, the exposure variable must be binary as a logistic
+model is used.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -45,9 +49,14 @@ and here...
 
 \examples{
 
+#Load example dataset
 simdata <- readRDS(system.file("rds","simdata1.rds",package="frontdoorpiie"))
+#Create an interaction term among covariates
 simdata$c1c2 <- simdata$c1*simdata$c2
-output <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",covariates.outcome=1,covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),interaction=1,astar=0)
+#Apply the function to estimate PIIE
+example <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",
+covariates.outcome=1,covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),
+interaction=1,astar=0)
 
 }
 \author{

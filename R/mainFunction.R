@@ -28,7 +28,7 @@
 #' simdata$c1c2 <- simdata$c1*simdata$c2
 #' #Apply the function to estimate PIIE
 #' example <- piieffect(data=simdata,outcome="y",intermediate="m",exposure="a",
-#' covariates.outcome=1,covariates.intermediate=c("c1"),covariates.exposure=c("c1","c2","c1c2"),
+#' covariates.outcome=c("c1","c2","c1c2"),covariates.intermediate=c("c1","c2","c1c2"),covariates.exposure=c("c1","c2","c1c2"),
 #' interaction=1,astar=0)
 #'
 setGeneric("piieffect",
@@ -195,16 +195,16 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
 
             # 3) SP 2  #
 
-            psi_sp2_i <- ((1-data[,intermediate])/(1-a_mean))*sum_a
+            psi_sp2_i <- ((1-data[,exposure])/(1-a_mean))*sum_a
 
             piie_sp2_i <- data[,outcome] - psi_sp2_i
 
             # 4) SP DR #
 
-            psi_dr_i <- (data[,outcome] - y_mean)*
-                           (dnorm(data[,intermediate],z_mean_astar,sigma)/dnorm(data[,intermediate],z_mean,sigma))
+            psi_dr_i <- ((data[,outcome] - y_mean)*
+                           (dnorm(data[,intermediate],z_mean_astar,sigma)/dnorm(data[,intermediate],z_mean,sigma)) +
                             + ((1-data[,exposure])/(1-a_mean))*(sum_a - sum_a_z)
-                            + sum_z
+                            + sum_z)
 
             piie_dr_i <- data[,outcome] - psi_dr_i
 
@@ -301,9 +301,9 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             output <- matrix( c(c(psi_mle,piie_mle,sqrt(piie_var_mle),ci_piie_mle),
                               c(psi_sp1,piie_sp1,sqrt(piie_var_sp1),ci_piie_sp1),
                               c(psi_sp2,piie_sp2,sqrt(piie_var_sp2),ci_piie_sp2),
-                              c(psi_dr,piie_dr,sqrt(piie_var_dr),ci_piie_dr)),4,4,byrow=TRUE)
+                              c(psi_dr,piie_dr,sqrt(piie_var_dr),ci_piie_dr)),4,5,byrow=TRUE)
 
-            colnames(output) <- c("Psi","PIIE","Standard Error","95% CI")
+            colnames(output) <- c("Psi","PIIE","Standard Error","95% CI Low","95% CI Up")
             rownames(output) <- c("MLE","SP1","SP2","DR")
 
             return(output)
@@ -424,7 +424,7 @@ U.sp2 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
   sum_z <- as.matrix(matrix_y_z_mean)%*%theta_hat
   sum_a_z <- as.matrix(matrix_y_az_mean)%*%theta_hat
 
-  psi_sp2_i <- ((1-data[,intermediate])/(1-a_mean))*sum_a
+  psi_sp2_i <- ((1-data[,exposure])/(1-a_mean))*sum_a
 
   piie_sp2_i<- data[,outcome] - psi_sp2_i
 
@@ -486,10 +486,10 @@ U.dr <- function(estimates,data,outcome,intermediate,exposure,interaction,astar,
   sum_z <- as.matrix(matrix_y_z_mean)%*%theta_hat
   sum_a_z <- as.matrix(matrix_y_az_mean)%*%theta_hat
 
-  psi_dr_i <- (data[,outcome] - y_mean)*
+  psi_dr_i <- ((data[,outcome] - y_mean)*
                (dnorm(data[,intermediate],z_mean_astar,sigma)/dnorm(data[,intermediate],z_mean,sigma))
                 + ((1-data[,exposure])/(1-a_mean))*(sum_a - sum_a_z)
-                + sum_z
+                + sum_z)
 
   piie_dr_i<- data[,outcome] - psi_dr_i
 

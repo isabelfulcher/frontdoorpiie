@@ -55,7 +55,7 @@ The argument for the covariates in the exposure model should be specified in `co
 simdata <- readRDS(system.file("rds","simdata1.rds",package="frontdoorpiie"))
 ```
 ### View example dataset
-```r
+```{r,echo=TRUE}
 head(simdata)
 ```
 ### Create an interaction term between covariate 1 and covariate 2 

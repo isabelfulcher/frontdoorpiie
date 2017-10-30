@@ -43,9 +43,7 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             ##   ERRORS   ##
             ################
 
-            if (length(covariates.outcome) == 0 | covariates.outcome == 0){covariates.outcome <- 1}
-            if (length(covariates.intermediate) == 0 | covariates.intermediate == 0){covariates.intermediate <- 1}
-            if (length(covariates.exposure) == 0 | covariates.exposure == 0){covariates.exposure <- 1}
+            #include some check here for if covariates are empty or equal to 0
 
             if ( sum(is.na(data[,c(outcome,intermediate,exposure)])) > 0)
               stop("Variables cannot have missing values")
@@ -163,14 +161,14 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             matrix_y_a_mean <- matrix_y
             if (interaction == 1){
               matrix_y_a_mean[,exposure] <- a_mean
-              matrix_y_a_mean[,interaction] <- a_mean*matrix_y[,intermediate]
+              matrix_y_a_mean[,"interaction"] <- a_mean*matrix_y[,intermediate]
             }else{matrix_y_a_mean[,exposure] <- a_mean}
 
             # design matrix for Y setting the intermediate Z to the predicted value under regime astar
             matrix_y_z_mean <- matrix_y
             if(interaction == 1){
               matrix_y_z_mean[,intermediate] <- z_mean_astar
-              matrix_y_z_mean[,interaction] <- z_mean_astar*matrix_y[,exposure]
+              matrix_y_z_mean[,"interaction"] <- z_mean_astar*matrix_y[,exposure]
             } else{matrix_y_z_mean[,intermediate] <- z_mean_astar}
 
             # design matrix for Y setting the intermediate A and Z to their predicted values
@@ -178,7 +176,7 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             if(interaction == 1){
               matrix_y_az_mean[,exposure] <- a_mean
               matrix_y_az_mean[,intermediate] <- z_mean
-              matrix_y_az_mean[,interaction] <- a_mean*z_mean
+              matrix_y_az_mean[,"interaction"] <- a_mean*z_mean
             } else{matrix_y_az_mean[,exposure] <- a_mean
             matrix_y_az_mean[,intermediate] <- z_mean}
 
@@ -273,7 +271,7 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             # 4) SP DR #
 
             # function will take derivative of the score
-            deriv_dr <- numDeriv::jacobian(U.dr,c(alpha_hat,beta_hat,theta_hat,piie_sp1),data=data,outcome=outcome,intermediate=intermediate,exposure=exposure,interaction=interaction,astar=astar,matrix_y=matrix_y,matrix_z=matrix_z,matrix_a=matrix_a,sigma=sigma)
+            deriv_dr <- numDeriv::jacobian(U.dr,c(alpha_hat,beta_hat,theta_hat,piie_dr),data=data,outcome=outcome,intermediate=intermediate,exposure=exposure,interaction=interaction,astar=astar,matrix_y=matrix_y,matrix_z=matrix_z,matrix_a=matrix_a,sigma=sigma)
 
             # score function
             score_dr <- as.matrix(cbind( matrix_a*c(data[,exposure] - a_mean),
@@ -282,7 +280,7 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
                                           (piie_dr_i - piie_dr)))
 
             # calculate variance matrix
-            var_dr <- (solve(deriv_sp1)%*%t(score_dr)%*%score_sp1%*%t(solve(deriv_dr)))
+            var_dr <- (solve(deriv_dr)%*%t(score_dr)%*%score_dr%*%t(solve(deriv_dr)))
 
             # variance for PIIE
             piie_var_dr <- var_dr[length(c(alpha_hat,beta_hat,theta_hat,piie_dr)),length(c(alpha_hat,beta_hat,theta_hat,piie_dr))]
@@ -341,20 +339,20 @@ U.sp1 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
   matrix_y_a_mean <- matrix_y
   if (interaction == 1){
     matrix_y_a_mean[,exposure] <- a_mean
-    matrix_y_a_mean[,interaction] <- a_mean*matrix_y[,intermediate]
+    matrix_y_a_mean[,"interaction"] <- a_mean*matrix_y[,intermediate]
   }else{matrix_y_a_mean[,exposure] <- a_mean}
 
   matrix_y_z_mean <- matrix_y
   if(interaction == 1){
     matrix_y_z_mean[,intermediate] <- z_mean_astar
-    matrix_y_z_mean[,interaction] <- z_mean_astar*matrix_y[,exposure]
+    matrix_y_z_mean[,"interaction"] <- z_mean_astar*matrix_y[,exposure]
   } else{matrix_y_z_mean[,intermediate] <- z_mean_astar}
 
   matrix_y_az_mean <- matrix_y
   if(interaction == 1){
     matrix_y_az_mean[,exposure] <- a_mean
     matrix_y_az_mean[,intermediate] <- z_mean
-    matrix_y_az_mean[,interaction] <- a_mean*z_mean
+    matrix_y_az_mean[,"interaction"] <- a_mean*z_mean
   } else{matrix_y_az_mean[,exposure] <- a_mean
   matrix_y_az_mean[,intermediate] <- z_mean}
 
@@ -403,20 +401,20 @@ U.sp2 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
   matrix_y_a_mean <- matrix_y
   if (interaction == 1){
     matrix_y_a_mean[,exposure] <- a_mean
-    matrix_y_a_mean[,interaction] <- a_mean*matrix_y[,intermediate]
+    matrix_y_a_mean[,"interaction"] <- a_mean*matrix_y[,intermediate]
   }else{matrix_y_a_mean[,exposure] <- a_mean}
 
   matrix_y_z_mean <- matrix_y
   if(interaction == 1){
     matrix_y_z_mean[,intermediate] <- z_mean_astar
-    matrix_y_z_mean[,interaction] <- z_mean_astar*matrix_y[,exposure]
+    matrix_y_z_mean[,"interaction"] <- z_mean_astar*matrix_y[,exposure]
   } else{matrix_y_z_mean[,intermediate] <- z_mean_astar}
 
   matrix_y_az_mean <- matrix_y
   if(interaction == 1){
     matrix_y_az_mean[,exposure] <- a_mean
     matrix_y_az_mean[,intermediate] <- z_mean
-    matrix_y_az_mean[,interaction] <- a_mean*z_mean
+    matrix_y_az_mean[,"interaction"] <- a_mean*z_mean
   } else{matrix_y_az_mean[,exposure] <- a_mean
   matrix_y_az_mean[,intermediate] <- z_mean}
 
@@ -465,20 +463,20 @@ U.dr <- function(estimates,data,outcome,intermediate,exposure,interaction,astar,
   matrix_y_a_mean <- matrix_y
   if (interaction == 1){
     matrix_y_a_mean[,exposure] <- a_mean
-    matrix_y_a_mean[,interaction] <- a_mean*matrix_y[,intermediate]
+    matrix_y_a_mean[,"interaction"] <- a_mean*matrix_y[,intermediate]
   }else{matrix_y_a_mean[,exposure] <- a_mean}
 
   matrix_y_z_mean <- matrix_y
   if(interaction == 1){
     matrix_y_z_mean[,intermediate] <- z_mean_astar
-    matrix_y_z_mean[,interaction] <- z_mean_astar*matrix_y[,exposure]
+    matrix_y_z_mean[,"interaction"] <- z_mean_astar*matrix_y[,exposure]
   } else{matrix_y_z_mean[,intermediate] <- z_mean_astar}
 
   matrix_y_az_mean <- matrix_y
   if(interaction == 1){
     matrix_y_az_mean[,exposure] <- a_mean
     matrix_y_az_mean[,intermediate] <- z_mean
-    matrix_y_az_mean[,interaction] <- a_mean*z_mean
+    matrix_y_az_mean[,"interaction"] <- a_mean*z_mean
   } else{matrix_y_az_mean[,exposure] <- a_mean
   matrix_y_az_mean[,intermediate] <- z_mean}
 

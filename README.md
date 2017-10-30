@@ -2,7 +2,7 @@
 
 A package for estimation and inference of the
 Population Intervention Indirect Effect (PIIE) using 
-the four estimators described in Fulcher et. al (2017). 
+the four estimators described in Fulcher et al. (2017). 
 
 
 ## Installation

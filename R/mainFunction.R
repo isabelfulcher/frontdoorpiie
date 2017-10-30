@@ -236,28 +236,25 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             # 2) SP 1  #
 
             # function will take derivative of the score
-            deriv_sp1 <- numDeriv::jacobian(U.sp1,c(alpha_hat,beta_hat,theta_hat,piie_sp1),data=data,outcome=outcome,intermediate=intermediate,exposure=exposure,interaction=interaction,astar=astar,matrix_y=matrix_y,matrix_z=matrix_z,matrix_a=matrix_a,sigma=sigma)
+            deriv_sp1 <- numDeriv::jacobian(U.sp1,c(beta_hat,piie_sp1),data=data,outcome=outcome,intermediate=intermediate,exposure=exposure,astar=astar,matrix_z=matrix_z,sigma=sigma)
 
             # score function
-            score_sp1 <- as.matrix(cbind( matrix_a*c(data[,exposure] - a_mean),
-                                matrix_z*c(data[,intermediate] - z_mean),
-                                matrix_y*c(data[,outcome] - y_mean),
-                                (piie_sp1_i - piie_sp1)))
+            score_sp1 <- as.matrix(cbind(matrix_z*c(data[,intermediate] - z_mean),
+                                   (piie_sp1_i - piie_sp1)))
 
             # calculate variance matrix
             var_sp1 <- (solve(deriv_sp1)%*%t(score_sp1)%*%score_sp1%*%t(solve(deriv_sp1)))
 
             # variance for PIIE
-            piie_var_sp1 <- var_sp1[length(c(alpha_hat,beta_hat,theta_hat,piie_sp1)),length(c(alpha_hat,beta_hat,theta_hat,piie_sp1))]
+            piie_var_sp1 <- var_sp1[length(c(beta_hat,piie_sp1)),length(c(beta_hat,piie_sp1))]
 
             # 3) SP 2  #
 
             # function will take derivative of the score
-            deriv_sp2 <- numDeriv::jacobian(U.sp2,c(alpha_hat,beta_hat,theta_hat,piie_sp2),data=data,outcome=outcome,intermediate=intermediate,exposure=exposure,interaction=interaction,astar=astar,matrix_y=matrix_y,matrix_z=matrix_z,matrix_a=matrix_a,sigma=sigma)
+            deriv_sp2 <- numDeriv::jacobian(U.sp2,c(alpha_hat,theta_hat,piie_sp2),data=data,outcome=outcome,intermediate=intermediate,exposure=exposure,interaction=interaction,astar=astar,matrix_y=matrix_y,matrix_a=matrix_a)
 
             # score function
             score_sp2 <- as.matrix(cbind( matrix_a*c(data[,exposure] - a_mean),
-                                          matrix_z*c(data[,intermediate] - z_mean),
                                           matrix_y*c(data[,outcome] - y_mean),
                                           (piie_sp2_i - piie_sp2)))
 
@@ -265,7 +262,7 @@ setMethod("piieffect", c(data = "data.frame",outcome = "character",intermediate=
             var_sp2 <- (solve(deriv_sp2)%*%t(score_sp2)%*%score_sp2%*%t(solve(deriv_sp2)))
 
             # variance for PIIE
-            piie_var_sp2 <- var_sp2[length(c(alpha_hat,beta_hat,theta_hat,piie_sp2)),length(c(alpha_hat,beta_hat,theta_hat,piie_sp2))]
+            piie_var_sp2 <- var_sp2[length(c(alpha_hat,theta_hat,piie_sp2)),length(c(alpha_hat,theta_hat,piie_sp2))]
 
 
             # 4) SP DR #
@@ -315,17 +312,13 @@ expit <- function(x){
 }
 
 # Score functions for semiparametric estimators
-U.sp1 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar,matrix_y,matrix_z,matrix_a,sigma){
+U.sp1 <- function(estimates,data,outcome,intermediate,exposure,astar,matrix_z,sigma){
 
   n <- nrow(data)
 
-  len_y <- ncol(matrix_y)
   len_z <- ncol(matrix_z)
-  len_a <- ncol(matrix_a)
 
-  alpha_hat <- estimates[1:len_a]
-  beta_hat <- estimates[(len_a+1):(len_a+len_z)]
-  theta_hat <- estimates[(len_a+len_z+1):(length(estimates) - 1)]
+  beta_hat <- estimates[1:len_z]
   piie_est <- estimates[length(estimates)]
 
   matrix_z_astar <- matrix_z
@@ -333,32 +326,6 @@ U.sp1 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
 
   z_mean_astar <- as.matrix(matrix_z_astar)%*%beta_hat
   z_mean <- as.matrix(matrix_z)%*%beta_hat
-  a_mean <- expit(as.matrix(matrix_a)%*%alpha_hat)
-  y_mean <- as.matrix(matrix_y)%*%theta_hat
-
-  matrix_y_a_mean <- matrix_y
-  if (interaction == 1){
-    matrix_y_a_mean[,exposure] <- a_mean
-    matrix_y_a_mean[,"interaction"] <- a_mean*matrix_y[,intermediate]
-  }else{matrix_y_a_mean[,exposure] <- a_mean}
-
-  matrix_y_z_mean <- matrix_y
-  if(interaction == 1){
-    matrix_y_z_mean[,intermediate] <- z_mean_astar
-    matrix_y_z_mean[,"interaction"] <- z_mean_astar*matrix_y[,exposure]
-  } else{matrix_y_z_mean[,intermediate] <- z_mean_astar}
-
-  matrix_y_az_mean <- matrix_y
-  if(interaction == 1){
-    matrix_y_az_mean[,exposure] <- a_mean
-    matrix_y_az_mean[,intermediate] <- z_mean
-    matrix_y_az_mean[,"interaction"] <- a_mean*z_mean
-  } else{matrix_y_az_mean[,exposure] <- a_mean
-  matrix_y_az_mean[,intermediate] <- z_mean}
-
-  sum_a <- as.matrix(matrix_y_a_mean)%*%theta_hat
-  sum_z <- as.matrix(matrix_y_z_mean)%*%theta_hat
-  sum_a_z <- as.matrix(matrix_y_az_mean)%*%theta_hat
 
   psi_sp1_i <- data[,outcome]*(dnorm(data[,intermediate],z_mean_astar,sigma)/dnorm(data[,intermediate],z_mean,sigma))
 
@@ -366,9 +333,7 @@ U.sp1 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
 
   piie_sp1 <- mean(data[,outcome]) - mean(psi_sp1_i)
 
-  score_sp1 <- cbind(matrix_a*c(data[,exposure] - a_mean),
-                     matrix_z*c(data[,intermediate] - z_mean),
-                     matrix_y*c(data[,outcome] - y_mean),
+  score_sp1 <- cbind(matrix_z*c(data[,intermediate] - z_mean),
                      (piie_sp1_i - piie_est))
 
   deriv <- matrix(1,1,n)%*%as.matrix(score_sp1)
@@ -377,24 +342,17 @@ U.sp1 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
 
 }
 
-U.sp2 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar,matrix_y,matrix_z,matrix_a,sigma){
+U.sp2 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar,matrix_y,matrix_a){
 
   n <- nrow(data)
 
   len_y <- ncol(matrix_y)
-  len_z <- ncol(matrix_z)
   len_a <- ncol(matrix_a)
 
   alpha_hat <- estimates[1:len_a]
-  beta_hat <- estimates[(len_a+1):(len_a+len_z)]
-  theta_hat <- estimates[(len_a+len_z+1):(length(estimates) - 1)]
+  theta_hat <- estimates[(len_a+1):(len_a+len_y)]
   piie_est <- estimates[length(estimates)]
 
-  matrix_z_astar <- matrix_z
-  matrix_z_astar[,exposure] <- astar
-
-  z_mean_astar <- as.matrix(matrix_z_astar)%*%beta_hat
-  z_mean <- as.matrix(matrix_z)%*%beta_hat
   a_mean <- expit(as.matrix(matrix_a)%*%alpha_hat)
   y_mean <- as.matrix(matrix_y)%*%theta_hat
 
@@ -404,23 +362,7 @@ U.sp2 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
     matrix_y_a_mean[,"interaction"] <- a_mean*matrix_y[,intermediate]
   }else{matrix_y_a_mean[,exposure] <- a_mean}
 
-  matrix_y_z_mean <- matrix_y
-  if(interaction == 1){
-    matrix_y_z_mean[,intermediate] <- z_mean_astar
-    matrix_y_z_mean[,"interaction"] <- z_mean_astar*matrix_y[,exposure]
-  } else{matrix_y_z_mean[,intermediate] <- z_mean_astar}
-
-  matrix_y_az_mean <- matrix_y
-  if(interaction == 1){
-    matrix_y_az_mean[,exposure] <- a_mean
-    matrix_y_az_mean[,intermediate] <- z_mean
-    matrix_y_az_mean[,"interaction"] <- a_mean*z_mean
-  } else{matrix_y_az_mean[,exposure] <- a_mean
-  matrix_y_az_mean[,intermediate] <- z_mean}
-
   sum_a <- as.matrix(matrix_y_a_mean)%*%theta_hat
-  sum_z <- as.matrix(matrix_y_z_mean)%*%theta_hat
-  sum_a_z <- as.matrix(matrix_y_az_mean)%*%theta_hat
 
   psi_sp2_i <- ((1-data[,exposure])/(1-a_mean))*sum_a
 
@@ -429,7 +371,6 @@ U.sp2 <- function(estimates,data,outcome,intermediate,exposure,interaction,astar
   piie_sp2 <- mean(data[,outcome]) - mean(psi_sp2_i)
 
   score_sp2 <- cbind(matrix_a*c(data[,exposure] - a_mean),
-                     matrix_z*c(data[,intermediate] - z_mean),
                      matrix_y*c(data[,outcome] - y_mean),
                      (piie_sp2_i - piie_est))
 
